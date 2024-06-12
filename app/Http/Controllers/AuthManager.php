@@ -19,6 +19,10 @@ class AuthManager extends Controller
     {
         return view('registration');
     }
+    function event()
+    {
+        return view('login');
+    }
     function loginPost(Request $request)
     {
          $request->validate([
@@ -55,4 +59,56 @@ class AuthManager extends Controller
         Auth::logout();
         return  redirect(route('login'));
     }
+    public function index()
+    {
+        $events = Event::all();
+        return view('events.index', compact('events'));
+    }
+
+    public function create()
+    {
+        return view('events.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'date' => 'required|date',
+            'venue' => 'required',
+            'featured_band' => 'required',
+            'ticket_price' => 'required|numeric',
+            'description' => 'required'
+        ]);
+
+        Event::create($request->all());
+        return redirect()->route('events.index')->with('success', 'Event added successfully');
+    }
+
+    public function edit(Event $event)
+    {
+        return view('events.edit', compact('event'));
+    }
+
+    public function update(Request $request, Event $event)
+    {
+        $request->validate([
+            'name' => 'required',
+            'date' => 'required|date',
+            'venue' => 'required',
+            'featured_band' => 'required',
+            'ticket_price' => 'required|numeric',
+            'description' => 'required'
+        ]);
+
+        $event->update($request->all());
+        return redirect()->route('events.index')->with('success', 'Event updated successfully');
+    }
+
+    public function destroy(Event $event)
+    {
+        $event->delete();
+        return redirect()->route('events.index')->with('success', 'Event deleted successfully');
+    }
+
 }
